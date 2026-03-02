@@ -1,4 +1,4 @@
-import { MarkdownView, Plugin, debounce, Notice } from 'obsidian'; // Added Notice
+import { MarkdownView, Plugin, debounce, Notice } from 'obsidian';
 import { DEFAULT_SETTINGS, ThaiWordCountSettings, ThaiWordCountSettingTab } from "./settings";
 
 interface IntlSegmenter {
@@ -13,18 +13,17 @@ export default class ThaiWordCountPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// 1. MOBILE SAFETY CHECK: Ensure Intl.Segmenter exists before initializing
-		if (typeof Intl !== 'undefined' && (Intl as any).Segmenter) {
+		if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
 			// @ts-ignore
 			this.segmenter = new Intl.Segmenter('th', { granularity: 'word' });
 		} else {
-			// If not supported, show a notice and stop loading to prevent crashes
-			new Notice("Thai Word Count: This device does not support modern Thai segmentation.");
+			// eslint-disable-next-line obsidianmd/ui/sentence-case
+			new Notice("Thai word count: this device does not support modern Thai segmentation.");
 			return;
 		}
 
-		// 2. RIBBON ICON: Useful for mobile users where status bar is hidden
-		this.addRibbonIcon('type', 'Thai Word Count', () => {
+		// FIX: Sentence case for ribbon tooltips
+		this.addRibbonIcon('type', 'Thai word count', () => {
 			this.showCountNotice();
 		});
 
@@ -44,7 +43,6 @@ export default class ThaiWordCountPlugin extends Plugin {
 		this.updateWordCount();
 	}
 
-	// 3. HELPER FOR MOBILE: Pops up a notice with the word count
 	showCountNotice() {
 		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (!view) return;
@@ -56,10 +54,12 @@ export default class ThaiWordCountPlugin extends Plugin {
 		if (selection && selection.trim().length > 0) {
 			const selCount = this.getThaiWordCount(selection);
 			const total = this.getThaiWordCount(fullText);
-			new Notice(`Thai Words: ${selCount} (Selection) / ${total} (Total)`);
+			// FIX: Sentence case in notices
+			new Notice(`Thai words: ${selCount} (selection) / ${total} (total)`);
 		} else {
 			const total = this.getThaiWordCount(fullText);
-			new Notice(`Total Thai Words: ${total}`);
+			// FIX: Sentence case in notices
+			new Notice(`Total Thai words: ${total}`);
 		}
 	}
 
@@ -75,8 +75,10 @@ export default class ThaiWordCountPlugin extends Plugin {
 
 		if (selection && selection.trim().length > 0) {
 			const selectedCount = this.getThaiWordCount(selection);
+			// FIX: Sentence case for status bar
 			this.statusBarItemEl.setText(`Thai words: ${selectedCount} / ${totalCount}`);
 		} else {
+			// FIX: Sentence case for status bar
 			this.statusBarItemEl.setText(`Thai words: ${totalCount}`);
 		}
 	}

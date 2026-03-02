@@ -51,14 +51,6 @@ npm version major  # bumps 1.0.0 → 2.0.0
 
 > Update `minAppVersion` in `manifest.json` manually before running `npm version` if needed.
 
-## Adding to Obsidian Community Plugins
-
-To submit this plugin to the Obsidian community plugin registry:
-
-1. Review the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-2. Publish a release on GitHub with version `1.0.0`.
-3. Make a pull request at https://github.com/obsidianmd/obsidian-releases with your plugin information.
-
 ## How to Use
 
 1. Install the Thai Word Count plugin from Obsidian's community plugins.

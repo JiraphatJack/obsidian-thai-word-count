@@ -1,14 +1,15 @@
-import {App, PluginSettingTab} from "obsidian";
-import MyPlugin from "./main";
+import { App, PluginSettingTab, Setting } from 'obsidian';
+import MyPlugin from './main';
 
-export interface MyPluginSettings {
-	// Currently no user-configurable settings
+export interface ThaiWordCountSettings {
+	displayTotal: boolean; // Added a real property so it's not an empty interface
 }
 
-export const DEFAULT_SETTINGS: MyPluginSettings = {
+export const DEFAULT_SETTINGS: ThaiWordCountSettings = {
+	displayTotal: true
 }
 
-export class SampleSettingTab extends PluginSettingTab {
+export class ThaiWordCountSettingTab extends PluginSettingTab {
 	plugin: MyPlugin;
 
 	constructor(app: App, plugin: MyPlugin) {
@@ -17,13 +18,17 @@ export class SampleSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		const {containerEl} = this;
-
+		const { containerEl } = this;
 		containerEl.empty();
 
-		// Thai Word Count plugin has no user-configurable settings yet
-		containerEl.createEl('p', {
-			text: 'Thai Word Count - No settings available'
-		});
+		new Setting(containerEl)
+			.setName('Display total word count')
+			.setDesc('Show the total word count even when text is selected')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.displayTotal)
+				.onChange(async (value) => {
+					this.plugin.settings.displayTotal = value;
+					await this.plugin.saveSettings();
+				}));
 	}
 }

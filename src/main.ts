@@ -1,37 +1,35 @@
-import { App, MarkdownView, Plugin, debounce, Editor } from 'obsidian';
-import { DEFAULT_SETTINGS, MyPluginSettings, SampleSettingTab } from "./settings";
+import { MarkdownView, Plugin, debounce } from 'obsidian';
+import { DEFAULT_SETTINGS, ThaiWordCountSettings, ThaiWordCountSettingTab } from "./settings";
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+// Define the interface to satisfy TypeScript without using 'any'
+interface IntlSegmenter {
+	segment(text: string): Iterable<{ isWordLike: boolean }>;
+}
+
+export default class ThaiWordCountPlugin extends Plugin {
+	settings: ThaiWordCountSettings;
 	statusBarItemEl: HTMLElement;
-	segmenter: Intl.Segmenter;
+	segmenter: IntlSegmenter;
 
 	async onload() {
 		await this.loadSettings();
 
-		// 1. Initialize the Thai word segmenter
+		// Create segmenter using the global Intl object
+		// @ts-ignore
 		this.segmenter = new Intl.Segmenter('th', { granularity: 'word' });
 
-		// 2. Setup status bar
 		this.statusBarItemEl = this.addStatusBarItem();
 
-		// 3. Register events for typing and selection
-		// This catches text changes (typing, deleting)
-		this.registerEvent(
-			this.app.workspace.on("editor-change", debounce(this.updateWordCount.bind(this), 300, true))
-		);
+		const debouncedUpdate = debounce(this.updateWordCount.bind(this), 300, true);
 
-		// This catches cursor movement and selection changes (Mouse and Keyboard)
-		this.registerEvent(
-			this.app.workspace.on("active-leaf-change", () => this.updateWordCount())
-		);
-
-		// Global listener for clicking/selection changes
+		this.registerEvent(this.app.workspace.on("editor-change", debouncedUpdate));
+		this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.updateWordCount()));
+		
 		this.registerDomEvent(document, "selectionchange", () => {
 			this.updateWordCount();
 		});
 
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new ThaiWordCountSettingTab(this.app, this));
 		
 		this.updateWordCount();
 	}
@@ -39,38 +37,30 @@ export default class MyPlugin extends Plugin {
 	updateWordCount() {
 		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 		
-		if (!view || !this.segmenter) {
-			this.statusBarItemEl.setText("");
-			return;
-		}
+		if (!view || !this.statusBarItemEl) return;
 
 		const editor = view.editor;
 		const fullText = editor.getValue();
 		const selection = editor.getSelection();
-
 		const totalCount = this.getThaiWordCount(fullText);
 
-		// If selection exists and isn't just whitespace
 		if (selection && selection.trim().length > 0) {
 			const selectedCount = this.getThaiWordCount(selection);
-			this.statusBarItemEl.setText(`Thai Words: ${selectedCount} / ${totalCount}`);
+			this.statusBarItemEl.setText(`Thai words: ${selectedCount} / ${totalCount}`);
 		} else {
-			this.statusBarItemEl.setText(`Thai Words: ${totalCount}`);
+			this.statusBarItemEl.setText(`Thai words: ${totalCount}`);
 		}
 	}
 
 	getThaiWordCount(text: string): number {
-		if (!text || !text.trim()) return 0;
-		
+		if (!text || !text.trim() || !this.segmenter) return 0;
 		const segments = this.segmenter.segment(text);
-		// Type casting to 'any' for isWordLike to bypass older TS definitions if necessary
-		return Array.from(segments).filter((s: any) => s.isWordLike).length;
+		return Array.from(segments).filter((s) => s.isWordLike).length;
 	}
 
-	onunload() {}
-
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		const data = await this.loadData() as ThaiWordCountSettings | null;
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, data);
 	}
 
 	async saveSettings() {

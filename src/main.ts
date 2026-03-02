@@ -1,7 +1,6 @@
-import { MarkdownView, Plugin, debounce } from 'obsidian';
+import { MarkdownView, Plugin, debounce, Notice } from 'obsidian'; // Added Notice
 import { DEFAULT_SETTINGS, ThaiWordCountSettings, ThaiWordCountSettingTab } from "./settings";
 
-// Define the interface to satisfy TypeScript without using 'any'
 interface IntlSegmenter {
 	segment(text: string): Iterable<{ isWordLike: boolean }>;
 }
@@ -14,9 +13,20 @@ export default class ThaiWordCountPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// Create segmenter using the global Intl object
-		// @ts-ignore
-		this.segmenter = new Intl.Segmenter('th', { granularity: 'word' });
+		// 1. MOBILE SAFETY CHECK: Ensure Intl.Segmenter exists before initializing
+		if (typeof Intl !== 'undefined' && (Intl as any).Segmenter) {
+			// @ts-ignore
+			this.segmenter = new Intl.Segmenter('th', { granularity: 'word' });
+		} else {
+			// If not supported, show a notice and stop loading to prevent crashes
+			new Notice("Thai Word Count: This device does not support modern Thai segmentation.");
+			return;
+		}
+
+		// 2. RIBBON ICON: Useful for mobile users where status bar is hidden
+		this.addRibbonIcon('type', 'Thai Word Count', () => {
+			this.showCountNotice();
+		});
 
 		this.statusBarItemEl = this.addStatusBarItem();
 
@@ -32,6 +42,25 @@ export default class ThaiWordCountPlugin extends Plugin {
 		this.addSettingTab(new ThaiWordCountSettingTab(this.app, this));
 		
 		this.updateWordCount();
+	}
+
+	// 3. HELPER FOR MOBILE: Pops up a notice with the word count
+	showCountNotice() {
+		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+		if (!view) return;
+
+		const editor = view.editor;
+		const selection = editor.getSelection();
+		const fullText = editor.getValue();
+
+		if (selection && selection.trim().length > 0) {
+			const selCount = this.getThaiWordCount(selection);
+			const total = this.getThaiWordCount(fullText);
+			new Notice(`Thai Words: ${selCount} (Selection) / ${total} (Total)`);
+		} else {
+			const total = this.getThaiWordCount(fullText);
+			new Notice(`Total Thai Words: ${total}`);
+		}
 	}
 
 	updateWordCount() {

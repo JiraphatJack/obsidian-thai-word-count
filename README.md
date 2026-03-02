@@ -73,25 +73,12 @@ npm version major  # bumps 1.0.0 → 2.0.0
 - GitHub Actions automatically lints every commit.
 
 ## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
-```
-
-If you have multiple URLs, you can also do:
-
 ```json
 {
     "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
+        "Buy Me a Coffee": "",
+        "GitHub Sponsor": "",
+        "Patreon": ""
     }
 }
 ```

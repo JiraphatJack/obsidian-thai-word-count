@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-sample-plugin",
+	"name": "obsidian-thai-word-count",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Counts words in Thai text using the Intl.Segmenter API.",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {

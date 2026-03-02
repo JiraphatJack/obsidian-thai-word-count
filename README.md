@@ -1,65 +1,84 @@
-# Obsidian Sample Plugin
+# Thai Word Count
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+This is an Obsidian plugin that counts words in Thai text.
 
 This project uses TypeScript to provide type checking and documentation.
 The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open modal (simple)" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## Features
 
-## First time developing plugins?
+- **Thai Word Segmentation**: Uses the native `Intl.Segmenter` API with Thai language support to accurately count words in Thai text.
+- **Status Bar Display**: Shows real-time word count in the status bar as you type.
+- **Selection Awareness**: Displays both selected word count and total word count when text is selected.
+- **Live Updates**: Updates automatically as you edit, with a 300ms debounce to prevent excessive recalculations.
 
-Quick starting guide for new plugin devs:
+## Getting Started
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+### Prerequisites
+- Node.js v18 or higher
+- npm (comes with Node.js)
 
-## Releasing new releases
-
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
-
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
-
-## Adding your plugin to the community plugin list
-
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
-
-## How to use
+### Development Setup
 
 - Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+- Run `npm install` to install dependencies.
+- Run `npm run dev` to start compilation in watch mode.
+- In Obsidian, reload the plugin to see your changes.
 
-## Manually installing the plugin
+### Building for Release
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+- Run `npm run build` to create an optimized production build.
+- Copy `main.js`, `manifest.json`, and `styles.css` (if any) to `<VaultFolder>/.obsidian/plugins/Thai-Word-Count/`.
+- Reload Obsidian and enable the plugin in **Settings → Community plugins**.
 
-## Improve code quality with eslint
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- This project already has eslint preconfigured, you can invoke a check by running`npm run lint`
-- Together with a custom eslint [plugin](https://github.com/obsidianmd/eslint-plugin) for Obsidan specific code guidelines.
-- A GitHub action is preconfigured to automatically lint every commit on all branches.
+## Releasing a New Version
+
+- Update `manifest.json` with the new version number (e.g., `1.1.0`) and minimum Obsidian version if needed.
+- Update `versions.json` to map the new version to the minimum Obsidian version.
+- Run `npm run build` to create the production build.
+- Commit and push changes.
+- Create a GitHub release with a tag matching the version number (e.g., `1.1.0`, not `v1.1.0`).
+- Attach `manifest.json` and `main.js` to the release.
+
+### Using npm Version Helper
+
+You can simplify the version bump process:
+```bash
+npm version patch  # bumps 1.0.0 → 1.0.1
+npm version minor  # bumps 1.0.0 → 1.1.0
+npm version major  # bumps 1.0.0 → 2.0.0
+```
+
+> Update `minAppVersion` in `manifest.json` manually before running `npm version` if needed.
+
+## Adding to Obsidian Community Plugins
+
+To submit this plugin to the Obsidian community plugin registry:
+
+1. Review the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
+2. Publish a release on GitHub with version `1.0.0`.
+3. Make a pull request at https://github.com/obsidianmd/obsidian-releases with your plugin information.
+
+## How to Use
+
+1. Install the Thai Word Count plugin from Obsidian's community plugins.
+2. Open any note with Thai text.
+3. The word count will appear in the status bar at the bottom of the window.
+4. Select any portion of Thai text to see the selected word count and total count.
+
+### Example Status Bar Output
+
+- Without selection: `Thai Words: 150`
+- With selection: `Thai Words: 25 / 150` (25 words selected out of 150 total)
+
+## Code Quality
+
+### ESLint
+
+- [ESLint](https://eslint.org/) analyzes your code to find common bugs and improvements. 
+- Run `npm run lint` to check the code.
+- This project includes ESLint preconfigured with [Obsidian-specific rules](https://github.com/obsidianmd/eslint-plugin).
+- GitHub Actions automatically lints every commit.
 
 ## Funding URL
 

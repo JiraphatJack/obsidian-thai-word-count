@@ -44,9 +44,9 @@ The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definiti
 
 You can simplify the version bump process:
 ```bash
-npm version patch  # bumps 1.0.0 → 1.0.1
-npm version minor  # bumps 1.0.0 → 1.1.0
-npm version major  # bumps 1.0.0 → 2.0.0
+npm version patch
+npm version minor
+npm version major
 ```
 
 > Update `minAppVersion` in `manifest.json` manually before running `npm version` if needed.
@@ -76,9 +76,7 @@ npm version major  # bumps 1.0.0 → 2.0.0
 ```json
 {
     "fundingUrl": {
-        "Buy Me a Coffee": "",
-        "GitHub Sponsor": "",
-        "Patreon": ""
+        "ko-fi": "https://ko-fi.com/jjpull1708"
     }
 }
 ```

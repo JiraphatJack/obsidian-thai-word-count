@@ -17,8 +17,6 @@ export default class ThaiWordCountPlugin extends Plugin {
 			// @ts-ignore
 			this.segmenter = new Intl.Segmenter('th', { granularity: 'word' });
 		} else {
-			// eslint-disable-next-line obsidianmd/ui/sentence-case
-			new Notice("Thai word count: this device does not support modern Thai segmentation.");
 			return;
 		}
 
